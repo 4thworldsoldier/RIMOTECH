@@ -17,6 +17,8 @@ namespace RIMOTECH.Services
         Task<Customer> Getcustomerasync(int cardnumber);
 
         Task<IEnumerable<Customer>> GetcustomerbystoreAsync(int storeid);
+
+        Task Delete(int customerid);
         //Task GetCardAsyn();
     }
 
@@ -37,7 +39,7 @@ namespace RIMOTECH.Services
         {
             if (_context.Customer.Any(x => x.Id == model.Id))
             {
-                return;
+                throw new KeyNotFoundException("customer already exist");
             }
             _context.Customer.Add(model);
             await _context.SaveChangesAsync();
@@ -57,6 +59,18 @@ namespace RIMOTECH.Services
         {
             var cards = await getCustomers(storeid);
             return cards;
+        }
+
+
+        public async Task Delete(int customerid)
+        {          
+            var customer = await getCustomer(customerid);
+            if (customer == null)
+            {
+                throw new KeyNotFoundException("customer not found");
+            }
+            _context.Customer.Remove(customer);
+            await _context.SaveChangesAsync();
         }
 
         private async Task<Customer> getCustomer(int customerid)

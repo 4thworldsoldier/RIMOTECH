@@ -23,8 +23,17 @@ namespace RIMOTECH.Controllers
         [HttpPost("PostCustomer")]
         public async Task<IActionResult> PostCustomer([FromBody] Customer model)
         {
-            await _customerservice.RegisterAsync(model);
-            return Ok(new { message = "New Customer Registration successful" });
+            try
+            {
+                await _customerservice.RegisterAsync(model);
+                return Ok(new { message = "New Customer Registration successful" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            //await _customerservice.RegisterAsync(model);
+            //return Ok(new { message = "New Customer Registration successful" });
         }
 
         [HttpGet("GetCustomer/{Id:int}")]
@@ -45,6 +54,20 @@ namespace RIMOTECH.Controllers
         {
             var customers = await _customerservice.GetcustomerbystoreAsync(storeid);
             return Ok(customers);
+        }
+        [HttpGet("DeleteCustomer/{Id:int}")]
+        public async Task<ActionResult> DeleteCustomer(int id)
+        {
+            try
+            {
+                await _customerservice.Delete(id);
+                return Ok(new { message = "Customer deleted successfully" });
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }
